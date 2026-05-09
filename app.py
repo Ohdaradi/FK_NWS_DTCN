@@ -189,18 +189,21 @@ def load_assets():
     v = joblib.load(vectorizer_path)
     return m, v
 
+m = None
+v = None
+
 try:
     m, v = load_assets()
 except FileNotFoundError as e:
-    st.error(f"❌ Model files not found: {e}")
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    st.write(f"Looking in: {script_dir}")
-    st.write(f"Files in directory: {os.listdir(script_dir)}")
+    st.error(f"❌ Model files not found: {str(e)}")
     st.stop()
 except Exception as e:
-    st.error(f"❌ Error loading model files: {type(e).__name__}: {e}")
-    import traceback
-    st.write(traceback.format_exc())
+    st.error(f"❌ Error loading model files: {type(e).__name__}")
+    st.error(str(e))
+    st.stop()
+
+if m is None or v is None:
+    st.error("❌ Model or vectorizer failed to load")
     st.stop()
 
 ps = PorterStemmer()
