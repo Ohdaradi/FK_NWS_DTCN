@@ -192,10 +192,15 @@ def load_assets():
 try:
     m, v = load_assets()
 except FileNotFoundError as e:
-    st.error(f"Model files not found: {e}")
+    st.error(f"❌ Model files not found: {e}")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    st.write(f"Looking in: {script_dir}")
+    st.write(f"Files in directory: {os.listdir(script_dir)}")
     st.stop()
 except Exception as e:
-    st.error(f"Error loading model files: {e}")
+    st.error(f"❌ Error loading model files: {type(e).__name__}: {e}")
+    import traceback
+    st.write(traceback.format_exc())
     st.stop()
 
 ps = PorterStemmer()
