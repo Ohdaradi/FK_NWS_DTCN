@@ -7,6 +7,7 @@ import streamlit as st
 import joblib
 import re
 import time
+import os
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 import nltk
@@ -181,14 +182,20 @@ st.markdown(
 # 3. Load ML Assets
 @st.cache_resource 
 def load_assets():
-    m = joblib.load('fake_news_master_model.pkl')
-    v = joblib.load('tfidf_master_vectorizer.pkl')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(script_dir, 'fake_news_master_model.pkl')
+    vectorizer_path = os.path.join(script_dir, 'tfidf_master_vectorizer.pkl')
+    m = joblib.load(model_path)
+    v = joblib.load(vectorizer_path)
     return m, v
 
 try:
     m, v = load_assets()
-except Exception:
-    st.error("Model files could not be loaded. Run training first to generate fake_news_master_model.pkl and tfidf_master_vectorizer.pkl.")
+except FileNotFoundError as e:
+    st.error(f"Model files not found: {e}")
+    st.stop()
+except Exception as e:
+    st.error(f"Error loading model files: {e}")
     st.stop()
 
 ps = PorterStemmer()
