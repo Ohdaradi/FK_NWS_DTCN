@@ -12,6 +12,22 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 import nltk
 
+# Load ML Assets FIRST before page configuration
+@st.cache_resource 
+def load_assets():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(script_dir, 'fake_news_master_model.pkl')
+    vectorizer_path = os.path.join(script_dir, 'tfidf_master_vectorizer.pkl')
+    m = joblib.load(model_path)
+    v = joblib.load(vectorizer_path)
+    return m, v
+
+try:
+    m, v = load_assets()
+except Exception as e:
+    st.error(f"Failed to load model: {type(e).__name__}: {str(e)}")
+    st.stop()
+
 # 1. Page Configuration
 st.set_page_config(page_title="Fake News Detection Using NLP", page_icon="🗞️", layout="wide")
 
@@ -180,31 +196,6 @@ st.markdown(
 )
 
 # 3. Load ML Assets
-@st.cache_resource 
-def load_assets():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, 'fake_news_master_model.pkl')
-    vectorizer_path = os.path.join(script_dir, 'tfidf_master_vectorizer.pkl')
-    m = joblib.load(model_path)
-    v = joblib.load(vectorizer_path)
-    return m, v
-
-m = None
-v = None
-
-try:
-    m, v = load_assets()
-except FileNotFoundError as e:
-    st.error(f"❌ Model files not found: {str(e)}")
-    st.stop()
-except Exception as e:
-    st.error(f"❌ Error loading model files: {type(e).__name__}")
-    st.error(str(e))
-    st.stop()
-
-if m is None or v is None:
-    st.error("❌ Model or vectorizer failed to load")
-    st.stop()
 
 ps = PorterStemmer()
 
