@@ -13,7 +13,7 @@ from nltk.stem.porter import PorterStemmer
 import nltk
 
 # Load ML Assets FIRST before page configuration
-@st.cache_resource 
+# Disable caching to always load fresh model
 def load_assets():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_dir, 'fake_news_master_model.pkl')
